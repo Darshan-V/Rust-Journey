@@ -1,8 +1,9 @@
-use std::io::{self, Write};
 use crate::file_handling::{read_todos, save_todos};
 use crate::todo::Todo;
+use std::io::{self, Write};
 
 pub fn print_todos(todos: &Vec<Todo>) {
+    //pub -> makes function visible to others
     for todo in todos {
         println!(
             "{} [{}] {}",
@@ -28,14 +29,18 @@ pub fn run_todo_app() {
         io::stdout().flush().unwrap();
 
         let mut input = String::new();
-        io::stdin().read_line(&mut input).expect("Failed to read line");
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
 
         match input.trim().parse::<u32>() {
             Ok(1) => {
                 print!("Enter todo title: ");
                 io::stdout().flush().unwrap();
                 let mut title = String::new();
-                io::stdin().read_line(&mut title).expect("Failed to read line");
+                io::stdin()
+                    .read_line(&mut title)
+                    .expect("Failed to read line");
                 let todo = Todo::new(next_id, title.trim());
                 todos.push(todo);
                 next_id += 1;
@@ -49,7 +54,9 @@ pub fn run_todo_app() {
                 print!("Enter todo id to toggle: ");
                 io::stdout().flush().unwrap();
                 let mut id_input = String::new();
-                io::stdin().read_line(&mut id_input).expect("Failed to read line");
+                io::stdin()
+                    .read_line(&mut id_input)
+                    .expect("Failed to read line");
                 if let Ok(id) = id_input.trim().parse::<u32>() {
                     if let Some(todo) = todos.iter_mut().find(|t| t.id == id) {
                         todo.completed = !todo.completed;
@@ -66,4 +73,3 @@ pub fn run_todo_app() {
         }
     }
 }
-
