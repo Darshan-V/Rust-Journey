@@ -1,4 +1,10 @@
 use std::{io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}};
+// The std::io module contains the necessary traits and structs for working with input and output.
+// The std::net module contains the necessary traits and structs for working with networking.
+// We are using the TcpListener and TcpStream structs to create a server that listens for incoming connections.
+// The BufReader struct is used to read the incoming data from the stream.
+// The prelude module is a collection of the most common traits and structs that are used in I/O operations.
+// We are using the prelude module to import the necessary traits and structs for working with I/O.
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
