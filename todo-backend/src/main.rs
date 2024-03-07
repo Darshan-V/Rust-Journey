@@ -34,7 +34,9 @@ fn main() {
 
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
+    // The BufReader struct is used to read the incoming data from the stream.
     let request_line = buf_reader.lines().next().unwrap().unwrap();
+    // The lines method returns an iterator that yields a new line for each line in the stream.
 
     if request_line == "GET / HTTP/1.1" {
         let (status_line, filename) = if request_line == "GET / HTTP/1.1" {
@@ -42,14 +44,29 @@ fn handle_connection(mut stream: TcpStream) {
         } else {
             ("HTTP/1.1 404 NOT FOUND", "404.html")
         };
+        // The status_line variable is a string that contains the status line for the response.
+        // The filename variable is a string that contains the name of the file to be served.
+
         let contents = fs::read_to_string(filename).unwrap();
+        // The read_to_string method is used to read the contents of the file and return a Result.
+        // The unwrap method is used to panic if there is an error.
         let length = contents.len();
+        // The len method is used to get the length of the contents.
+
 
         let response = format!(
             "{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}"
         );
+        // The format! macro is used to create a string that contains the response.
+        // The response contains the status line, the content length, and the contents of the file.
+        // The \r\n is used to add a new line to the response.
+
 
         stream.write_all(response.as_bytes()).unwrap();
+        // The write_all method is used to write the response to the stream.
+        // The as_bytes method is used to convert the response to a byte array.
+        // The unwrap method is used to panic if there is an error.
+        
     } else {
         let status_line = "HTTP/1.1 404 NOT FOUND";
         let contents = fs::read_to_string("404.html").unwrap();
