@@ -1,4 +1,8 @@
-use std::{io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}};
+use std::{
+    fs,
+    io::{prelude::*, BufReader},
+    net::{TcpListener, TcpStream},
+};
 // The std::io module contains the necessary traits and structs for working with input and output.
 // The std::net module contains the necessary traits and structs for working with networking.
 // We are using the TcpListener and TcpStream structs to create a server that listens for incoming connections.
@@ -8,11 +12,19 @@ use std::{io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}};
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    // The bind method is used to bind the server to the address and port.
 
     for stream in listener.incoming() {
+        // The incoming method returns an iterator that yields a new TcpStream for each incoming connection.
         let stream = stream.unwrap();
+        // The unwrap method is used to panic if there is an error.
+        // In this case, we are using it to panic if we are unable to get the stream from the incoming connection.
+        // The stream is a TcpStream that represents the connection to and from the client.
+
+        // We are calling the handle_connection function for each incoming connection.
 
         handle_connection(stream);
+        // The handle_connection function is called with the stream as an argument.
     }
 }
 
@@ -20,18 +32,36 @@ fn main() {
 // then we are listening for incoming connections.
 // When a connection is received, we are calling the handle_connection function and passing the stream to it.
 
-
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
-    let http_request: Vec<_> = buf_reader
-        .lines()
-        .map(|result| result.unwrap())
-        .take_while(|line| !line.is_empty())
-        .collect();
+    let request_line = buf_reader.lines().next().unwrap().unwrap();
 
-    println!("Request: {:#?}", http_request);
+    if request_line == "GET / HTTP/1.1" {
+        let (status_line, filename) = if request_line == "GET / HTTP/1.1" {
+            ("HTTP/1.1 200 OK", "hello.html")
+        } else {
+            ("HTTP/1.1 404 NOT FOUND", "404.html")
+        };
+        let contents = fs::read_to_string(filename).unwrap();
+        let length = contents.len();
+
+        let response = format!(
+            "{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}"
+        );
+
+        stream.write_all(response.as_bytes()).unwrap();
+    } else {
+        let status_line = "HTTP/1.1 404 NOT FOUND";
+        let contents = fs::read_to_string("404.html").unwrap();
+        let length = contents.len();
+
+        let response = format!(
+            "{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}"
+        );
+
+        stream.write_all(response.as_bytes()).unwrap();
+    }
 }
-
 
 /*
 Request: [
