@@ -95,3 +95,55 @@ let a: [i32; 5] = [1, 2, 3, 4, 5];
 
 ```
 Here, i32 is the type of each element. After the semicolon, the number 5 indicates the array contains five elements.
+
+## Inner Development Loop
+- Make a change
+- Compile the app
+- Run tests
+- Run the app
+
+#### Compilation speed is a bit slow in the rust -> how to mitigate the issue:
+- Faster Linking - lld, a linker developed by the LLVM Project
+- ```
+ “# .cargo/config.toml
+
+# On Windows 
+# ```
+# cargo install -f cargo-binutils
+# rustup component add llvm-tools-preview
+# ```
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[target.x86_64-pc-windows-gnu]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+# On Linux:
+# - Ubuntu, `sudo apt-get install lld clang`
+# - Arch, `sudo pacman -S lld clang`
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-C", "linker=clang", "-C", "link-arg=-fuse-ld=lld"]
+
+# On MacOS, `brew install llvm` and follow steps in `brew info llvm`
+[target.x86_64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=/opt/homebrew/opt/llvm/bin/ld64.lld"]”
+
+```
+- Cargo watch 
+```
+“cargo install cargo-watch”
+```
+
+- “cargo-watch monitors your source code to trigger commands every time a file changes.
+  For example:
+    cargo watch -x check
+    will run cargo check after every code change.
+    
+This reduces the perceived compilation time:
+  - you are still in your IDE, re-reading the code change you just made;
+  - cargo-watch, in the meantime, has already kick-started the compilation process;
+  - once you switch to your terminal, the compiler is already halfway through!”
+

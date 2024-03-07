@@ -1,0 +1,9 @@
+- [ ] stack, heaps and static memory
+- [ ] how memory allocation and deallocation works
+- [ ] manual memory management and garbage collection
+- [ ] concurrency and parallelism 
+- [ ] multithreading, synchronisation, parallel processing
+- [ ] compiled vs interpreted languages
+- [ ] crust of rust //youtube series// 
+- [ ] server programming - Jeremy chone
+- [ ] 
