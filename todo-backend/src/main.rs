@@ -66,7 +66,7 @@ fn handle_connection(mut stream: TcpStream) {
         // The write_all method is used to write the response to the stream.
         // The as_bytes method is used to convert the response to a byte array.
         // The unwrap method is used to panic if there is an error.
-        
+
     } else {
         let status_line = "HTTP/1.1 404 NOT FOUND";
         let contents = fs::read_to_string("404.html").unwrap();
