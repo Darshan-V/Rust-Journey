@@ -104,14 +104,13 @@ Here, i32 is the type of each element. After the semicolon, the number 5 indicat
 
 #### Compilation speed is a bit slow in the rust -> how to mitigate the issue:
 - Faster Linking - lld, a linker developed by the LLVM Project
-- ```
- “# .cargo/config.toml
+-```“# .cargo/config.toml```
 
 # On Windows 
-# ```
-# cargo install -f cargo-binutils
-# rustup component add llvm-tools-preview
-# ```
+ ```
+ cargo install -f cargo-binutils
+ rustup component add llvm-tools-preview
+ ```
 [target.x86_64-pc-windows-msvc]
 rustflags = ["-C", "link-arg=-fuse-ld=lld"]
 
@@ -133,11 +132,11 @@ rustflags = ["-C", "link-arg=-fuse-ld=/opt/homebrew/opt/llvm/bin/ld64.lld"]”
 
 ```
 - Cargo watch 
-```
+
 “cargo install cargo-watch”
 ```
 
-- “cargo-watch monitors your source code to trigger commands every time a file changes.
+- “```cargo-watch``` monitors your source code to trigger commands every time a file changes.
   For example:
     cargo watch -x check
     will run cargo check after every code change.
@@ -147,3 +146,84 @@ This reduces the perceived compilation time:
   - cargo-watch, in the meantime, has already kick-started the compilation process;
   - once you switch to your terminal, the compiler is already halfway through!”
 
+* Continuous integration: CI pipeline
+
+## Thread Pool
+- A thread pool is a group of pre-instantiated, 
+idle threads which stand ready to be given work. 
+These are preferred over instantiating new threads for each
+task when there is a large number of short tasks to be done rather than
+a small number of long ones.
+
+
+## Enums
+##### Options enum
+- In Rust, both Option and Result are enums that are 
+commonly used to handle optional and error-prone situations, respectively.
+```  rust
+enum Option<T> {
+  Some(T),
+  None,
+  }
+```
+- It represents either a value (Some(T)) or no value (None). This is useful
+when a computation might return a value or might fail to produce a value.
+- eg
+  ``` rust
+  // An Option that can either contain an integer or be None
+  let some_value: Option<i32> = Some(42);
+  let no_value: Option<i32> = None;
+  ```
+  
+##### Result enum
+- The Result enum is used to handle error-prone situations. It is defined as follows:
+``` rust
+enum Result<T, E> {
+  Ok(T),
+  Err(E),
+  }
+```
+- It represents either a successful value (Ok(T)) or an error (Err(E)).
+This is useful when a computation might return a value or might fail to produce 
+a value, along with an error message.
+- eg
+  ``` rust
+  // A Result that can either contain an integer or an error message
+  let success: Result<i32, &str> = Ok(42);
+  let failure: Result<i32, &str> = Err("Something went wrong");
+  ```
+  - Common methods associated with Result include 
+  unwrap(), is_ok(), is_err(), map(), and_then(), etc.
+## Unwrap()
+- The unwrap() method is a convenient way to handle the Result enum.
+- It returns the value inside the Ok(T) variant if the result is Ok,
+- otherwise, it panics and returns the error message inside the Err(E) variant.
+- eg
+  ``` rust
+  let success: Result<i32, &str> = Ok(42);
+  let failure: Result<i32, &str> = Err("Something went wrong");
+  println!("{}", success.unwrap()); // 42
+  println!("{}", failure.unwrap()); // panics with "Something went wrong"
+  ```
+- The unwrap() method is useful when you are confident that the result will be Ok.
+- However, it is not recommended to use unwrap() in production code, as it can lead to panics.
+- Instead, it is better to use match or the ? operator to handle the Result enum.
+- The ? operator can be used to propagate errors from a function that returns a Result.
+- It returns the value inside the Ok(T) variant if the result is Ok,
+- otherwise, it returns the error message inside the Err(E) variant.
+- eg
+  ``` rust
+  fn divide(x: f64, y: f64) -> Result<f64, &str> {
+  if y == 0.0 {
+  Err("Cannot divide by zero")
+  } else {
+  Ok(x / y)
+  }
+  }
+  fn main() {
+  let result = divide(10.0, 2.0)?;
+  println!("{}", result); // 5.0
+  let result = divide(10.0, 0.0)?;
+  println!("{}", result); // panics with "Cannot divide by zero"
+  }
+  ```
